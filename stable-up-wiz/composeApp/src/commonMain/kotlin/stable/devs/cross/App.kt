@@ -26,6 +26,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 import stable.devs.cross.ui.AuroraBackground
+import stable.devs.cross.ui.InfoCard
 
 import stable_up_wiz.composeapp.generated.resources.Res
 import stable_up_wiz.composeapp.generated.resources.compose_multiplatform
@@ -38,14 +39,24 @@ fun App() {
 
     // 2. Define your color schemes
     val lightColors = lightColorScheme(
-        background = Color.White
-        // Optionally customize your light theme colors here
-        // primary = ..., surface = ..., background = Color.White, ...
+        background = Color(0xFFFEFBF0),
+        surface = Color(0xFFFFFDF5), // Card background can be surface
+        primary = Color(0xFF00FF00), // Your green
+        secondary = Color(0xFFFFD700), // Example Yellow - we can adjust
+        onPrimary = Color.Black, // Text on green button
+        onSecondary = Color.Black, // Text on yellow
+        onBackground = Color(0xFF1C1B10), // Text on white background
+        onSurface = Color(0xFF1C1B10) // Text on cards
     )
     val darkColors = darkColorScheme(
-        background = Color.Black
-        // Optionally customize your dark theme colors here
-        // primary = ..., surface = ..., background = Color.Black, ...
+        background = Color(0xFF2A281E),
+        surface = Color(0xFF2A281E), // Slightly off-black for cards in dark mode
+        primary = Color(0xFF00FF00), // Your green (might need a slightly less intense version for dark mode, or keep it vibrant)
+        secondary = Color(0xFFFFD700),
+        onPrimary = Color.Black,
+        onSecondary = Color.Black,
+        onBackground = Color(0xFFE8E2D9),
+        onSurface = Color(0xFFE8E2D9)
     )
 
     // 3. Determine which color scheme to use based on the state
@@ -57,24 +68,23 @@ fun App() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background // This will paint the theme's background
         ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            AuroraBackground()
-
-            var showContent by remember { mutableStateOf(false) }
-            Column(
+            Column( // Main layout column for the screen
                 modifier = Modifier
-                    .safeContentPadding()
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .safeContentPadding(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                var showContent by remember { mutableStateOf(false) }
+                // Place the InfoCard here
+                InfoCard(modifier = Modifier.padding(top = 16.dp))
+                Spacer(Modifier.height(8.dp)) // Space between InfoCard and button
+                var showContent by remember { mutableStateOf(false) } // This state should be outside if it affects things outside this immediate button
                 Button(onClick = { showContent = !showContent }) {
-                    Text("Click me!")
+                    Text("Show me the $$!")
                 }
                 AnimatedVisibility(showContent) {
                     val greeting = remember { Greeting().greet() }
                     Column(
-                        Modifier.fillMaxWidth(),
+                        Modifier.fillMaxWidth().padding(top = 16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Image(painterResource(Res.drawable.compose_multiplatform), null)
@@ -82,16 +92,15 @@ fun App() {
                     }
                 }
 
-                Spacer(Modifier.weight(1f))
+                Spacer(Modifier.weight(1f)) // Pushes theme toggle to bottom
 
                 Button(
                     onClick = { isDarkMode = !isDarkMode },
-                    modifier = Modifier.padding(bottom = 16.dp) // Add some padding from the bottom
+                    modifier = Modifier.padding(bottom = 16.dp)
                 ) {
                     Text(if (isDarkMode) "Light Mode" else "Dark Mode")
                 }
             }
-        }
         }
     }
 }
