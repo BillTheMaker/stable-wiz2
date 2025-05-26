@@ -1,8 +1,5 @@
 package stable.devs.cross
 
-// Imports from your App.kt in Turn 65, plus new ones for bottom sheet/buttons
-// Ensure all Material3 components like Button, Surface, Text, ColorSchemes are imported
-// Remove AnimatedVisibility, Image, painterResource, and related Res imports if no longer used
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -22,7 +19,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import stable.devs.cross.ui.AtmosphericBackground
 import stable.devs.cross.ui.InfoCard
 import stable.devs.cross.ui.TransactionButtons // For Deposit/Withdrawal
-import stable.devs.cross.ui.TransactionBottomSheet // For the new bottom sheet
+import stable.devs.cross.ui.TransactionBottomSheet
+import stable.devs.cross.ui.TopSettingsMenu
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,8 +29,6 @@ import stable.devs.cross.ui.TransactionBottomSheet // For the new bottom sheet
 fun App() {
     var isDarkMode by remember { mutableStateOf(true) }
 
-    // Your color definitions (as per your Turn 65 App.kt)
-    // Assuming offWhite hex was meant to be valid, e.g., 0xFFF5FAFD
     val offBlack = Color(0xFF1A1F24)
     val offWhite = Color(0xFFF5FAFD) // Used for InfoCard light bg (was F5FFAFD in your file)
     val primaryBrand = Color(0xFF4CAF50)   // Your chosen less saturated green
@@ -65,6 +61,8 @@ fun App() {
     var transactionType by remember { mutableStateOf("") } // "Deposit" or "Withdrawal"
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
+    val actualInfoCardBackgroundColor = offWhite
+
     MaterialTheme(colorScheme = currentColorScheme) {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -72,9 +70,9 @@ fun App() {
         ) {
             Box(modifier = Modifier.fillMaxSize()) { // For layering AtmosphericBackground
                 AtmosphericBackground(
-                    isAppInDarkMode = isDarkMode, // Main atmospheric background reacts to theme
+                    isDarkMode = isDarkMode,
                     glowHintColor = secondaryBrand,
-                    baseBackgroundColor = MaterialTheme.colorScheme.background
+                    baseBackgroundColor = offBlack
                 )
                 Column(
                     modifier = Modifier
@@ -82,10 +80,14 @@ fun App() {
                         .safeContentPadding(), // Original padding for the entire content column
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
+                    TopSettingsMenu(
+                        isDarkMode = isDarkMode,
+                        onThemeToggle = { isDarkMode = !isDarkMode }
+                    )
+
                     InfoCard(
-                        modifier = Modifier.padding(top = 16.dp), // This was the padding in your Turn 65 App.kt
-                        cardLightModeBaseBgColor = offWhite,   // Pass your defined light off-white
-                        cardGlowHintColor = secondaryBrand      // Pass your defined blue
+                        modifier = Modifier.padding(top = 16.dp),
+                        cardContentBackgroundColor = offWhite
                     )
 
                     Spacer(Modifier.height(24.dp)) // Space between InfoCard and new buttons
@@ -106,21 +108,7 @@ fun App() {
 
                     Spacer(Modifier.weight(1f)) // This pushes the theme toggle button to the bottom
 
-                    Button( // Original theme toggle button at the bottom
-                        onClick = { isDarkMode = !isDarkMode },
-                        modifier = Modifier.padding(bottom = 16.dp),
-                        elevation = ButtonDefaults.buttonElevation(
-                            defaultElevation = 12.dp, // From your Turn 65 App.kt
-                            pressedElevation = 0.dp,
-                            disabledElevation = 4.dp
-                        ),
-                        colors = ButtonDefaults.buttonColors( // Ensure button colors are themed
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        )
-                    ) {
-                        Text(if (isDarkMode) "Light Mode" else "Dark Mode")
-                    }
+
                 }
             }
         }

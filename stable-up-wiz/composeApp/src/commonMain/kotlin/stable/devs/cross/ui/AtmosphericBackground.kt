@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
@@ -13,56 +14,68 @@ import androidx.compose.ui.graphics.compositeOver
 @Composable
 fun AtmosphericBackground(
     modifier: Modifier = Modifier,
-    isAppInDarkMode: Boolean, // Renamed for clarity: the app's actual dark mode state
-    glowHintColor: Color,
-    baseBackgroundColor: Color,
-    // New optional parameters for overriding appearance:
-    forceLightModeAppearance: Boolean = false, // If true, internal logic uses light mode alphas/bases
-    glowIntensityMultiplier: Float = 1.0f // Scale the glow's alpha (0.0 to 1.0)
+    isDarkMode: Boolean,
+    glowHintColor: Color, // Your secondaryBrand (Blue)
+    baseBackgroundColor: Color
 ) {
     Canvas(modifier = modifier.fillMaxSize()) {
         val canvasWidth = size.width
         val canvasHeight = size.height
 
-        // Determine effective mode for appearance based on override
-        val useEffectiveDarkMode = if (forceLightModeAppearance) false else isAppInDarkMode
+        // --- Parameters for the "Lit Shape from Right" Effect ---
 
-        // Use the passed baseBackgroundColor directly. If forceLightModeAppearance is true,
-        // the caller (InfoCard) will be responsible for passing the light mode baseBackgroundColor.
-        val effectiveBaseBackgroundColor = baseBackgroundColor
+        // Define the "sphere" or "moon" shape that receives light
+        // Let's make it a large oval, mostly off-screen to the right,
+        // so its curved lit edge sweeps onto the screen.
+        val shapeWidth = canvasWidth * 2.0f // Make the shape wider than the canvas
+        val shapeHeight = canvasWidth * 2.0f // Make it taller
+        val shapeTopLeftX = canvasWidth * -1.25f // Start the shape from 40% across the screen (so left part is visible)
+        val shapeTopLeftY = (canvasHeight - (shapeHeight * 1.35f)) // Center it vertically
 
-        val highlightCenterX = canvasWidth * 0.70f
-        val highlightCenterY = canvasHeight * 0.45f
-        val lightEffectRadius = canvasWidth * 0.85f
+        // Center of the light *on this shape*.
+        // If light comes from the right, the highlight on the shape will be on its right side.
+        // Relative to the shape's own coordinate system (from shapeTopLeftX, shapeTopLeftY)
+        val lightHitRelX = shapeWidth * 1.2f // Light hits 85% of the way across the shape (its right side)
+        val lightHitRelY = shapeHeight * 0.7f  // Light hits at re
 
-        // Adjust alpha values based on effective mode and intensity multiplier
-        val highlightAlpha = (if (useEffectiveDarkMode) 0.28f else 0.20f) * glowIntensityMultiplier
-        val midToneAlpha = (if (useEffectiveDarkMode) 0.12f else 0.08f) * glowIntensityMultiplier
+        // Convert to absolute canvas coordinates for the gradient center
+        val gradientCenterX = shapeTopLeftX + lightHitRelX
+        val gradientCenterY = shapeTopLeftY + lightHitRelY
 
-        // Define colors for the gradient
-        val highlightColorEffective = glowHintColor.copy(alpha = highlightAlpha)
+        // Radius of the gradient *on the shape*. This controls how the light falls off across the shape.
+        val gradientRadiusOnShape = shapeWidth * 0.7f // Light spreads over percentage of shape's width
+
+        // Colors for the gradient on the shape
+        val highlightColor = glowHintColor.copy(alpha = if (isDarkMode) 0.30f else 0.20f)
             .compositeOver(
-                // Use a brighter compositing base if we are rendering for light mode appearance
-                if (!useEffectiveDarkMode) Color.White.copy(alpha = 0.25f)
-                else effectiveBaseBackgroundColor.copy(alpha = 0.3f)
+                if (isDarkMode) baseBackgroundColor.copy(alpha = 0.3f)
+                else Color.White.copy(alpha = 0.2f)
             )
+        // The shape fades into the base background color at its "unlit" parts
+        val shapeUnlitColor = baseBackgroundColor
 
-        val midToneColorEffective = glowHintColor.copy(alpha = midToneAlpha)
-            .compositeOver(
-                if (!useEffectiveDarkMode) effectiveBaseBackgroundColor.copy(alpha = 0.6f) // Light mode base with decent alpha
-                else effectiveBaseBackgroundColor.copy(alpha = 0.7f) // Dark mode base with decent alpha
-            )
+        val shapeBrush = Brush.radialGradient(
+            // Lit part of the shape
+            0.0f to highlightColor,
+            // How quickly the highlight fades across the shape.
+            // 0.4f means it fades to the shape's unlit color by 40% of gradientRadiusOnShape
+            0.9f to shapeUnlitColor,
 
-        val ambientColor = effectiveBaseBackgroundColor
-
-        val atmosphericBrush = Brush.radialGradient(
-            0.00f to highlightColorEffective,
-            0.30f to midToneColorEffective,
-            0.80f to ambientColor,
-            center = Offset(highlightCenterX, highlightCenterY),
-            radius = lightEffectRadius
+            center = Offset(gradientCenterX, gradientCenterY), // Center of light ON THE SHAPE
+            radius = gradientRadiusOnShape
         )
 
-        drawRect(brush = atmosphericBrush, size = size)
+        // Draw the shape (e.g., an oval) that represents our lit celestial body/effect
+        drawOval(
+            brush = shapeBrush,
+            topLeft = Offset(shapeTopLeftX, shapeTopLeftY),
+            size = Size(shapeWidth, shapeHeight)
+        )
+
+        // Optionally: Draw a very subtle, nearly transparent full-screen layer of the baseBackgroundColor
+        // on top of everything IF you want to mute the whole effect slightly further,
+        // or ensure edges blend perfectly if the shape doesn't cover everything.
+        // For now, let's see how the shape looks directly on the implicit background.
+        // If your Surface in App.kt already has baseBackgroundColor, that will be behind this.
     }
 }
