@@ -1,11 +1,9 @@
+// In composeApp/src/commonMain/kotlin/stable/devs/cross/ui/InfoCard.kt
 package stable.devs.cross.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card // Using Material3 Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,39 +11,56 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import stable.devs.cross.ui.AuroraBackground
 
 @Composable
 fun InfoCard(
     modifier: Modifier = Modifier,
+    // Values typically passed from App.kt or a Theme definition
+    cardLightModeBaseBgColor: Color,    // e.g., your offWhite Color(0xFFF5FAFD)
+    cardGlowHintColor: Color            // e.g., your secondaryBrand Blue Color(0xFF4DB6AC)
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(12.dp), // Padding around the card
-        shape = RoundedCornerShape(16.dp), // Rounded corners like in the examples
-        elevation = CardDefaults.cardElevation(defaultElevation = 24.dp) // Optional shadow
+            .padding(horizontal = 16.dp, vertical = 8.dp), // Padding around the card
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent // Card itself is transparent
+        )
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(400.dp) // Example height, make it dynamic or fixed as needed
-                .clip(RoundedCornerShape(16.dp)) // Clip the Aurora to the card's shape
+                .heightIn(min = 200.dp) // Example minimum height for the card
+                .clip(RoundedCornerShape(16.dp))
         ) {
-            AuroraBackground() // Aurora is the background of this Box
+            AtmosphericBackground(
+                isAppInDarkMode = false, // This parameter is somewhat overridden by forceLightModeAppearance
+                glowHintColor = cardGlowHintColor, // The original blue hue
+                baseBackgroundColor = cardLightModeBaseBgColor, // Always use the light version of base
+                forceLightModeAppearance = true, // CRUCIAL: Ensures light mode logic is used
+                glowIntensityMultiplier = 0.4f // "Less of it" & "Greyed out" - significantly reduce alpha
+                // Adjust this (0.3f to 0.6f) for desired subtlety
+            )
 
-            // Content of the card goes here, on top of Aurora
+            // Content of your InfoCard
             Column(
-                modifier = Modifier.fillMaxSize().padding(16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween // Example arrangement
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "$0.00", // Placeholder for balance
+                    text = "$0.00", // Placeholder
                     fontSize = 32.sp,
-                    color = MaterialTheme.colorScheme.onSurface // Use theme color for text on card
+                    // Text color should be for a light background.
+                    // Use onSurface from your main theme, which will be dark if main theme is light,
+                    // or light if main theme is dark. We need to ensure this text is readable.
+                    // Forcing dark text here as the card background is always light:
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.87f) // Or a specific dark grey
                 )
-                // Placeholder for graph
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -53,13 +68,9 @@ fun InfoCard(
                         .padding(vertical = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Graph Area", color = MaterialTheme.colorScheme.onSurface)
+                    Text("Graph Area Placeholder", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                 }
-                // Placeholder for APY/Boost buttons if needed, like Fido example
-                Row {
-                    Text("6% APY", color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(end = 8.dp))
-                    Text("0% Boost", color = MaterialTheme.colorScheme.onSurface)
-                }
+                // ... other card content ...
             }
         }
     }

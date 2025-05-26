@@ -1,55 +1,68 @@
+// In composeApp/src/commonMain/kotlin/stable/devs/cross/ui/AtmosphericBackground.kt
 package stable.devs.cross.ui
 
-
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme // Needed if you want to access theme colors directly here
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.dp
 
 @Composable
 fun AtmosphericBackground(
     modifier: Modifier = Modifier,
-    isDarkMode: Boolean,
-    brandYellow: Color,
-    baseBackgroundColor: Color // Pass the current theme's background color
+    isAppInDarkMode: Boolean, // Renamed for clarity: the app's actual dark mode state
+    glowHintColor: Color,
+    baseBackgroundColor: Color,
+    // New optional parameters for overriding appearance:
+    forceLightModeAppearance: Boolean = false, // If true, internal logic uses light mode alphas/bases
+    glowIntensityMultiplier: Float = 1.0f // Scale the glow's alpha (0.0 to 1.0)
 ) {
-    val configuration = LocalConfiguration.current
-    val density = LocalDensity.current
-    val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
-    val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
+    Canvas(modifier = modifier.fillMaxSize()) {
+        val canvasWidth = size.width
+        val canvasHeight = size.height
 
-    val atmosphericBrush = Brush.radialGradient(
-        colors = if (isDarkMode) {
-            listOf(
-                // Center of the "moon reflection" glow in dark mode:
-                // A very subtle yellow glow composited onto a slightly lighter version of the base background
-                baseBackgroundColor.copy(alpha = 0.95f).compositeOver(brandYellow.copy(alpha = 0.04f)),
-                baseBackgroundColor // Fades to the main dark base background
-            )
-        } else {
-            listOf(
-                // Center of the subtle glow in light mode:
-                // A brighter, very subtle yellow tinted glow composited onto a whiter base
-                Color.White.copy(alpha = 0.8f).compositeOver(brandYellow.copy(alpha = 0.03f)),
-                baseBackgroundColor // Fades to the main light base background
-            )
-        },
-        center = Offset(screenWidthPx / 2f, screenHeightPx * 0.4f), // Centered H, slightly above vertical center
-        radius = screenWidthPx * 1.0f // Make radius large for a diffuse effect
-    )
+        // Determine effective mode for appearance based on override
+        val useEffectiveDarkMode = if (forceLightModeAppearance) false else isAppInDarkMode
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(brush = atmosphericBrush)
-    )
+        // Use the passed baseBackgroundColor directly. If forceLightModeAppearance is true,
+        // the caller (InfoCard) will be responsible for passing the light mode baseBackgroundColor.
+        val effectiveBaseBackgroundColor = baseBackgroundColor
+
+        val highlightCenterX = canvasWidth * 0.70f
+        val highlightCenterY = canvasHeight * 0.45f
+        val lightEffectRadius = canvasWidth * 0.85f
+
+        // Adjust alpha values based on effective mode and intensity multiplier
+        val highlightAlpha = (if (useEffectiveDarkMode) 0.28f else 0.20f) * glowIntensityMultiplier
+        val midToneAlpha = (if (useEffectiveDarkMode) 0.12f else 0.08f) * glowIntensityMultiplier
+
+        // Define colors for the gradient
+        val highlightColorEffective = glowHintColor.copy(alpha = highlightAlpha)
+            .compositeOver(
+                // Use a brighter compositing base if we are rendering for light mode appearance
+                if (!useEffectiveDarkMode) Color.White.copy(alpha = 0.25f)
+                else effectiveBaseBackgroundColor.copy(alpha = 0.3f)
+            )
+
+        val midToneColorEffective = glowHintColor.copy(alpha = midToneAlpha)
+            .compositeOver(
+                if (!useEffectiveDarkMode) effectiveBaseBackgroundColor.copy(alpha = 0.6f) // Light mode base with decent alpha
+                else effectiveBaseBackgroundColor.copy(alpha = 0.7f) // Dark mode base with decent alpha
+            )
+
+        val ambientColor = effectiveBaseBackgroundColor
+
+        val atmosphericBrush = Brush.radialGradient(
+            0.00f to highlightColorEffective,
+            0.30f to midToneColorEffective,
+            0.80f to ambientColor,
+            center = Offset(highlightCenterX, highlightCenterY),
+            radius = lightEffectRadius
+        )
+
+        drawRect(brush = atmosphericBrush, size = size)
+    }
 }

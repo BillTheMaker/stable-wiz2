@@ -16,9 +16,7 @@ fun AuroraBackground() {
 
         // Define your colors - feel free to experiment!
         val color1 = Color(0xFF00FF00).copy(alpha = 0.1f) // Example: Purple, slightly transparent
-        val color2 = Color(0xFFE100FF).copy(alpha = 0.2f) // Example: Magenta, slightly transparent
-        val color3 = Color(0xFFFFEB3B).copy(alpha = 0.1f) // Green/Yellow, slightly transparent
-        val color4 = Color(0xFFF89B29).copy(alpha = 0.15f)  // Example: Orange, slightly transparent
+        val color2 = Color(0xFFFFEB3B).copy(alpha = 0.1f) // Green/Yellow, slightly transparent
 
         // Draw soft, overlapping circles with radial gradients
         // Adjust centers, radii, and colors to get the look you want.
@@ -68,8 +66,8 @@ fun AuroraBackground() {
         // Smaller Orange accent blob
         drawCircle(
             brush = Brush.radialGradient(
-                0.0f to color3.copy(alpha = 0.1f),    // Color at stop 0.0f
-                0.7f to color3.copy(alpha = 0.02f),   // Color at stop 0.7f
+                0.0f to color2.copy(alpha = 0.1f),    // Color at stop 0.0f
+                0.7f to color2.copy(alpha = 0.02f),   // Color at stop 0.7f
                 1.0f to Color.Transparent,
                 center = Offset(canvasWidth * 0.25f, canvasHeight * 0.7f),
                 radius = canvasWidth * 0.4f
