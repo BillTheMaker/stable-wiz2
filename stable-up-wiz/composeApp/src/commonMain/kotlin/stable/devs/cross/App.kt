@@ -30,9 +30,11 @@ fun App() {
     var isDarkMode by remember { mutableStateOf(true) }
 
     val offBlack = Color(0xFF1A1F24)
-    val offWhite = Color(0xFFF5FAFD) // Used for InfoCard light bg (was F5FFAFD in your file)
-    val primaryBrand = Color(0xFF4CAF50)   // Your chosen less saturated green
-    val secondaryBrand = Color(0xFF4DB6AC) // Your chosen blue
+    val offWhite = Color(0xFFF5FAFD)
+    val primaryBrand = Color(0xFF7E57C2)   // purple
+    val secondaryBrand = Color(0xFF42A5F5) // blue
+    val cardGradientStart = Color(0xFF1E2A4D) // A dark navy/purple
+    val cardGradientEnd = Color(0xFF2C3A65) // a dark blue
 
     val lightColors = lightColorScheme(
         background = Color.White, // Main app background in light mode
@@ -41,7 +43,7 @@ fun App() {
         secondary = secondaryBrand,
         onPrimary = Color.White,    // Text on primaryBrand buttons
         onSecondary = Color.White,  // Text on secondaryBrand elements
-        onBackground = offBlack,    // Text on main app's light background
+        onBackground = offBlack,    // Text on the light background
         onSurface = offBlack        // Text on default surfaces in light mode
     )
     val darkColors = darkColorScheme(
@@ -87,7 +89,8 @@ fun App() {
 
                     InfoCard(
                         modifier = Modifier.padding(top = 16.dp),
-                        cardContentBackgroundColor = offWhite
+                        gradientStartColor = cardGradientStart, // Pass the new start color
+                        gradientEndColor = cardGradientEnd
                     )
 
                     Spacer(Modifier.height(24.dp)) // Space between InfoCard and new buttons

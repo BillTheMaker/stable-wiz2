@@ -23,12 +23,13 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun InfoCard(
     modifier: Modifier = Modifier,
-    cardContentBackgroundColor: Color // For the off-white background
+    gradientStartColor: Color,
+    gradientEndColor: Color
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp), // Padding around the card
+            .padding(horizontal = 8.dp, vertical = 8.dp), // Padding around the card
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         colors = CardDefaults.cardColors(
@@ -38,12 +39,14 @@ fun InfoCard(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(400.dp) // Set to a fixed height
+                .height(225.dp) // Set to a fixed height
                 .clip(RoundedCornerShape(16.dp))
-                .background(cardContentBackgroundColor) // Apply the off-white background
+                .background(Color(0xFF212121))
         ) {
-            // Previous AtmosphericBackground or AuroraBackground calls are removed here
-
+            SimpleGradientBackground(
+                startColor = gradientStartColor,
+                endColor = gradientEndColor
+            )
             // Content of your InfoCard
             Column(
                 modifier = Modifier
