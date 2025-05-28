@@ -24,26 +24,30 @@ fun AtmosphericBackground(
 
         // --- Parameters for the "Lit Shape from Right" Effect ---
 
-        // Define the "sphere" or "moon" shape that receives light
-        // Let's make it a large oval, mostly off-screen to the right,
-        // so its curved lit edge sweeps onto the screen.
-        val shapeWidth = canvasWidth * 2.0f // Make the shape wider than the canvas
-        val shapeHeight = canvasWidth * 2.0f // Make it taller
-        val shapeTopLeftX = canvasWidth * -1.25f // Start the shape from 40% across the screen (so left part is visible)
-        val shapeTopLeftY = (canvasHeight - (shapeHeight * 1.35f)) // Center it vertically
+        val shapeWidth = canvasWidth * 2.50f // Make the shape wider than the canvas
+        val shapeHeight = canvasWidth * 2.50f // Make it taller
+        val shapeTopLeftX = canvasWidth * -1.5f // Start the shape from 40% across the screen (so left part is visible)
+        val shapeTopLeftY = (canvasHeight - (shapeHeight * 1f)) // Center it vertically
 
-        // Center of the light *on this shape*.
-        // If light comes from the right, the highlight on the shape will be on its right side.
-        // Relative to the shape's own coordinate system (from shapeTopLeftX, shapeTopLeftY)
-        val lightHitRelX = shapeWidth * 1.2f // Light hits 85% of the way across the shape (its right side)
-        val lightHitRelY = shapeHeight * 0.7f  // Light hits at re
+        val lightHitRelX: Float
+        val lightHitRelY: Float
 
+        if (isDarkMode) {
+            // Dark Mode: Light "behind" - interpret as coming from the far left
+            // This will place the highlight on the far-left side of the large shape.
+            lightHitRelX = shapeWidth * 1.2f // Closer to the shape's own left edge
+            lightHitRelY = shapeHeight * 0.7f // Centered vertically on the shape
+        } else {
+            // Light Mode: Light "in front but off screen" - similar to original, from the right
+            lightHitRelX = shapeWidth * -.5f
+            lightHitRelY = shapeHeight * 0.2f // Original Y position
+        }
         // Convert to absolute canvas coordinates for the gradient center
         val gradientCenterX = shapeTopLeftX + lightHitRelX
         val gradientCenterY = shapeTopLeftY + lightHitRelY
 
         // Radius of the gradient *on the shape*. This controls how the light falls off across the shape.
-        val gradientRadiusOnShape = shapeWidth * 0.7f // Light spreads over percentage of shape's width
+        val gradientRadiusOnShape = shapeWidth * 0.85f // Light spreads over percentage of shape's width
 
         // Colors for the gradient on the shape
         val highlightColor = glowHintColor.copy(alpha = if (isDarkMode) 0.30f else 0.20f)

@@ -31,20 +31,22 @@ fun App() {
 
     val offBlack = Color(0xFF1A1F24)
     val offWhite = Color(0xFFF5FAFD)
-    val primaryBrand = Color(0xFF7E57C2)   // purple
-    val secondaryBrand = Color(0xFF42A5F5) // blue
+    val primaryBrand = Color(0xFFc770c5)   // purple
+    val secondaryBrand = Color(0xFF6248fb) // blue
     val cardGradientStart = Color(0xFF1E2A4D) // A dark navy/purple
     val cardGradientEnd = Color(0xFF2C3A65) // a dark blue
+    val lightSkyBlue = Color(0xFFB0E0E6) // A nice Powdery Blue for the sky
+    val moonGray = Color(0xFFB0B8C0)
 
     val lightColors = lightColorScheme(
-        background = Color.White, // Main app background in light mode
+        background = lightSkyBlue, // Main app background in light mode
         surface = offWhite,       // Surface color (e.g., for cards if they don't have their own bg)
         primary = primaryBrand,
         secondary = secondaryBrand,
         onPrimary = Color.White,    // Text on primaryBrand buttons
         onSecondary = Color.White,  // Text on secondaryBrand elements
-        onBackground = offBlack,    // Text on the light background
-        onSurface = offBlack        // Text on default surfaces in light mode
+        onBackground = Color.Black,    // Text on the light background
+        onSurface = Color.Black        // Text on default surfaces in light mode
     )
     val darkColors = darkColorScheme(
         background = offBlack,     // Main app background in dark mode
@@ -63,18 +65,24 @@ fun App() {
     var transactionType by remember { mutableStateOf("") } // "Deposit" or "Withdrawal"
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    val actualInfoCardBackgroundColor = offWhite
-
     MaterialTheme(colorScheme = currentColorScheme) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background // Main screen background
         ) {
             Box(modifier = Modifier.fillMaxSize()) { // For layering AtmosphericBackground
+
+                val atmosphericShapeBaseColor = if (isDarkMode) {
+                    MaterialTheme.colorScheme.surface // e.g., offBlack for the dark "globe"
+                } else {
+                    moonGray // The gray "moon" body for light mode
+                }
+
                 AtmosphericBackground(
+                    modifier = Modifier.fillMaxSize(),
                     isDarkMode = isDarkMode,
                     glowHintColor = secondaryBrand,
-                    baseBackgroundColor = offBlack
+                    baseBackgroundColor = atmosphericShapeBaseColor
                 )
                 Column(
                     modifier = Modifier
@@ -89,8 +97,8 @@ fun App() {
 
                     InfoCard(
                         modifier = Modifier.padding(top = 16.dp),
-                        gradientStartColor = cardGradientStart, // Pass the new start color
-                        gradientEndColor = cardGradientEnd
+                        cardBgPrimaryColor = primaryBrand, // Pass the new start color
+                        cardBgSecondaryColor = secondaryBrand
                     )
 
                     Spacer(Modifier.height(24.dp)) // Space between InfoCard and new buttons
@@ -101,9 +109,19 @@ fun App() {
                             transactionType = "Deposit"
                             showTransactionSheet = true
                         },
-                        onWithdrawalClick = {
-                            transactionType = "Withdrawal"
+                        onSendClick = {
+                            // You'll need to define what "Send" does.
+                            // For now, let's set it up for the bottom sheet like Deposit.
+                            transactionType = "Send"
                             showTransactionSheet = true
+                            // Or, println("Send clicked")
+                        },
+                        onReceiveClick = {
+                            // You'll need to define what "Receive" does.
+                            // For now, let's set it up for the bottom sheet like Deposit.
+                            transactionType = "Receive"
+                            showTransactionSheet = true
+                            // Or, println("Receive clicked")
                         }
                     )
 
@@ -117,15 +135,15 @@ fun App() {
         }
     }
 
-    if (showTransactionSheet) {
-        TransactionBottomSheet(
-            transactionType = transactionType,
-            sheetState = sheetState,
-            onDismiss = { showTransactionSheet = false },
-            onConfirm = { amount ->
-                println("$transactionType Confirmed: $$amount") // Placeholder action
-                showTransactionSheet = false
-            }
-        )
-    }
+//    if (showTransactionSheet) {
+//        TransactionBottomSheet(
+//            transactionType = transactionType,
+//            sheetState = sheetState,
+//            onDismiss = { showTransactionSheet = false },
+//            onConfirm = { amount ->
+//                println("$transactionType Confirmed: $$amount") // Placeholder action
+//                showTransactionSheet = false
+//            }
+//        )
+//    }
 }

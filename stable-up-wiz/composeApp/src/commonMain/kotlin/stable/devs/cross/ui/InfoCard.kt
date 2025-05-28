@@ -23,8 +23,8 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun InfoCard(
     modifier: Modifier = Modifier,
-    gradientStartColor: Color,
-    gradientEndColor: Color
+    cardBgPrimaryColor: Color,
+    cardBgSecondaryColor: Color
 ) {
     Card(
         modifier = modifier
@@ -41,11 +41,15 @@ fun InfoCard(
                 .fillMaxWidth()
                 .height(225.dp) // Set to a fixed height
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF212121))
+                .background(Color.Black)
+                .background(cardBgSecondaryColor.copy(alpha = 0.1f))
         ) {
-            SimpleGradientBackground(
-                startColor = gradientStartColor,
-                endColor = gradientEndColor
+            OvalGradientBackground(
+                modifier = Modifier.fillMaxSize(),
+                primaryColor = cardBgPrimaryColor,
+                secondaryColor = cardBgSecondaryColor,
+                primaryOvalRotationDegrees = -15f,  // Example: Rotate primary oval by 15 degrees
+                secondaryOvalRotationDegrees = 30f // Example: Rotate secondary oval by -10 degrees
             )
             // Content of your InfoCard
             Column(
@@ -55,12 +59,6 @@ fun InfoCard(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = "$0.00", // Placeholder
-                    fontSize = 32.sp,
-                    // Assuming onSurface provides good contrast against cardContentBackgroundColor
-                    color = Color.Black
-                )
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -69,8 +67,9 @@ fun InfoCard(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        "Graph Area Placeholder",
-                        color = Color.Black
+                        "$4,789.57",
+                        fontSize = 32.sp,
+                        color = Color.White
                     )
                 }
             }

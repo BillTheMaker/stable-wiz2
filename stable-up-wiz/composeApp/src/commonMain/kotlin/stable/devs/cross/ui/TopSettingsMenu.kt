@@ -9,10 +9,12 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -26,7 +28,7 @@ fun TopSettingsMenu(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = 8.dp, end = 8.dp, top = 16.dp) // Padding for the bar area
+            .padding(start = 8.dp, end = 8.dp, top = 8.dp) // Padding for the bar area
     ) {
         IconButton(
             onClick = { showMenu = true },
@@ -34,7 +36,8 @@ fun TopSettingsMenu(
         ) {
             Icon(
                 imageVector = Icons.Default.Menu,
-                contentDescription = "Settings"
+                contentDescription = "Settings",
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
 

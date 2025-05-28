@@ -64,6 +64,8 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
+            implementation(compose.materialIconsExtended) // For core icons (often transitive with material3)
+            implementation(compose.material) // For extended icons like automirrored
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
@@ -111,7 +113,7 @@ dependencies {
     debugImplementation(compose.uiTooling)
 }
 
-compose.desktop {
+ compose.desktop {
     application {
         mainClass = "stable.devs.cross.MainKt"
 
