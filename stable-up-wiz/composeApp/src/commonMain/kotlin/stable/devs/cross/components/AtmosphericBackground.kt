@@ -1,5 +1,5 @@
 // In composeApp/src/commonMain/kotlin/stable/devs/cross/ui/AtmosphericBackground.kt
-package stable.devs.cross.ui
+package stable.devs.cross.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize

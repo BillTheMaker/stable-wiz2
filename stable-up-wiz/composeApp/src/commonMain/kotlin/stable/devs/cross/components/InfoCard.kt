@@ -1,4 +1,4 @@
-package stable.devs.cross.ui
+package stable.devs.cross.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

@@ -1,6 +1,6 @@
 @file:JvmName("SharedBackgrounds2Kt")
 
-package stable.devs.cross.ui
+package stable.devs.cross.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
 import kotlin.jvm.JvmName
 
 

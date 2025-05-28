@@ -71,6 +71,10 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+
+            val voyagerVersion = "1.1.0-beta03" // Or the latest version you find
+            implementation(libs.voyager.navigator)
+            implementation(libs.cafe.voyager.transitions)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

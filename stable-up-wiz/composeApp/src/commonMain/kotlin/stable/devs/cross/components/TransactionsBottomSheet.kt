@@ -1,4 +1,4 @@
-package stable.devs.cross.ui // Or your chosen package
+package stable.devs.cross.components // Or your chosen package
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions

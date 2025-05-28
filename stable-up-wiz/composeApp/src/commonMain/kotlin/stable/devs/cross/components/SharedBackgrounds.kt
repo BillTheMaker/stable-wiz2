@@ -1,8 +1,6 @@
-package stable.devs.cross.ui
+package stable.devs.cross.components
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background // Keep for SimpleGradientBackground if used
-import androidx.compose.foundation.layout.Box // Keep for SimpleGradientBackground if used
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
