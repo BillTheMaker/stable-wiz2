@@ -8,17 +8,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import cafe.adriel.voyager.navigator.Navigator // Import Voyager Navigator
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
-// Import your existing UI components if App.kt still directly uses any (it shouldn't much after this)
 import stable.devs.cross.components.AtmosphericBackground
-// Import your new HomeScreen
-import stable.devs.cross.screens.HomeScreen // Or stable.devs.cross.screens.HomeScreen
+import stable.devs.cross.screens.HomeScreen
+import kotlin.math.round
+import kotlin.math.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
 fun App() {
     var isDarkMode by remember { mutableStateOf(true) }
+    var fakeBalance by remember { mutableStateOf(10000.24) }
+
 
     val offBlack = Color(0xFF1A1F24)
     val offWhite = Color(0xFFF5FAFD)
@@ -49,9 +50,23 @@ fun App() {
     )
     val currentColorScheme = if (isDarkMode) darkColors else lightColors
 
-    // The TransactionBottomSheet state and related variables (showTransactionSheet, transactionType, sheetState)
-    // are removed from here for now. They would typically live within the screen that triggers them (e.g., HomeScreen)
-    // or be managed by a ViewModel/ScreenModel if the logic is complex or shared.
+    fun formatDoubleToCurrency(value: Double, currencySymbol: String = "$", decimalPlaces: Int = 2): String {
+        val factor = 10.0.pow(decimalPlaces.toDouble())
+        val roundedValue = round(value * factor) / factor
+        val parts = roundedValue.toString().split('.')
+        val integerPart = parts[0]
+        val actualDecimalPart = if (parts.size > 1) parts[1] else ""
+        val decimalPart = if (parts.size > 1) parts[1].padEnd(decimalPlaces, '0') else "".padEnd(decimalPlaces, '0')
+        return "$currencySymbol$integerPart.$decimalPart"
+    }
+
+    val formattedBalanceState: State<String> = remember {
+        derivedStateOf {
+            println("derivedStateOf for formattedBalance executing. fakeBalance = $fakeBalance")
+            formatDoubleToCurrency(fakeBalance)
+        }
+    }
+    println("formattedBalanceState.value for this recomposition = ${formattedBalanceState.value}")
 
     MaterialTheme(colorScheme = currentColorScheme) {
         Surface(
@@ -74,14 +89,35 @@ fun App() {
 
                 // Initialize Navigator with HomeScreen
                 // Pass the necessary parameters to HomeScreen
+                println("Navigator being called with formattedBalanceState.value = ${formattedBalanceState.value}")
                 Navigator(
                     screen = HomeScreen(
                         isDarkMode = isDarkMode,
                         onThemeToggle = { isDarkMode = !isDarkMode },
                         primaryBrandColor = primaryBrand,
-                        secondaryBrandColor = secondaryBrand
+                        secondaryBrandColor = secondaryBrand,
+                        balanceState = formattedBalanceState,
+                        onDeposit = { amountString ->
+                            amountString.toDoubleOrNull()?.let { amount ->
+                                if (amount > 0.0) {
+                                    println("Current fakeBalance before deposit: $fakeBalance")
+                                    fakeBalance += amount
+                                    println("New fakeBalance after deposit: $fakeBalance")
+                                }
+                            } ?: println("Invalid deposit amount: $amountString")
+                        },
+                        onWithdraw = { amountString ->
+                            amountString.toDoubleOrNull()?.let { amount ->
+                                if (amount > 0.0 && fakeBalance >= amount) {
+                                    fakeBalance -= amount
+                                } else if (fakeBalance < amount) {
+                                    println("Insufficient funds for withdrawal.")
+                                }
+                            } ?: println("Invalid withdrawal amount: $amountString")
+                        }
                         // Pass other necessary data
-                    )
+                    ),
+                    key = formattedBalanceState.value
                 )
             }
         }

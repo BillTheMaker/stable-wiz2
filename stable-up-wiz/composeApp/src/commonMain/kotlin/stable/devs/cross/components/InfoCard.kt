@@ -24,7 +24,8 @@ import androidx.compose.ui.unit.sp
 fun InfoCard(
     modifier: Modifier = Modifier,
     cardBgPrimaryColor: Color,
-    cardBgSecondaryColor: Color
+    cardBgSecondaryColor: Color,
+    balanceToDisplay: String //
 ) {
     Card(
         modifier = modifier
@@ -67,7 +68,7 @@ fun InfoCard(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        "$4,789.57",
+                        balanceToDisplay,
                         fontSize = 32.sp,
                         color = Color.White
                     )
