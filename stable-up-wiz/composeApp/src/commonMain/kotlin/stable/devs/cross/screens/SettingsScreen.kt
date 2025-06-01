@@ -98,10 +98,6 @@ object SettingsScreen : Screen {
                                         subtitle = item.subtitle,
                                         onClick = item.onClick
                                     )
-                                    if (index < settingsGroup.items.lastIndex) {
-                                        // Add divider inside the card, between items
-                                        HorizontalDivider(modifier = Modifier.padding(start = 56.dp)) // Start divider after icon space
-                                    }
                                 }
                             }
                         }

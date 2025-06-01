@@ -26,9 +26,11 @@ import stable.devs.cross.screens.ReceiveScreen
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward // For example transaction
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.Card // For the new card
 import androidx.compose.material3.CardDefaults // For card styling
 import androidx.compose.material3.HorizontalDivider // For divider in card
@@ -48,6 +50,8 @@ import stable.devs.cross.components.TransactionUiItem
 import stable.devs.cross.components.TransactionType
 // Import for TransactionBottomSheet (assuming it's in 'ui' package as per your TopSettingsMenu import)
 import stable.devs.cross.components.TransactionBottomSheet
+import stable.devs.cross.components.buttonSpacing
+
 // --- END OF NEW IMPORTS ---
 
 
@@ -79,14 +83,24 @@ class HomeScreen(
         var showTransactionSheet by remember { mutableStateOf(false) }
         val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-        val exampleTransaction = remember {
-            TransactionUiItem(
-                id = "exTx1",
-                description = "Received from Friend",
-                amount = "+ $75.00",
-                date = "May 31, 2025",
-                type = TransactionType.RECEIVE,
-                icon = Icons.Filled.ArrowDownward // Example icon
+        val recentTransactions = remember { // Renamed from exampleTransaction to recentTransactions
+            listOf(
+                TransactionUiItem(
+                    id = "exTx1",
+                    description = "Received from Friend",
+                    amount = "+ $75.00",
+                    date = "May 31, 2025",
+                    type = TransactionType.RECEIVE,
+                    icon = Icons.Filled.ArrowDownward
+                ),
+                TransactionUiItem(
+                    id = "exTx2",
+                    description = "Payment to Store",
+                    amount = "- $30.25",
+                    date = "May 30, 2025",
+                    type = TransactionType.SEND, // Or WITHDRAWAL
+                    icon = Icons.Filled.ArrowUpward // Example icon for outgoing
+                )
             )
         }
         val recentActivityCardColor = Color(0xFF2C2C2E)
@@ -106,25 +120,30 @@ class HomeScreen(
                 balanceToDisplay = currentBalanceValue
             )
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(16.dp))
 
             TransactionButtons(
                 onDepositClick = {
                     println("HomeScreen (hashCode: $screenInstanceHashCode, key: $key): Deposit button clicked.")
                     navigator.push(DepositScreen(onConfirm = { amountStr ->
-                        println("HomeScreen (hashCode: $screenInstanceHashCode, key: $key): onConfirm from DepositScreen (amount: '$amountStr'). Calling onDeposit.")
                         onDeposit(amountStr) // This updates fakeBalance in App.kt
                         navigator.pop()      // This pops DepositScreen, returning to this HomeScreen
-                        println("HomeScreen (hashCode: $screenInstanceHashCode, key: $key): Popped DepositScreen.")
-                    }))
+                        },
+                        isDarkMode = isDarkMode, // Pass isDarkMode from HomeScreen
+                        primaryBrandColor = primaryBrandColor, // Pass primaryBrandColor from HomeScreen
+                        secondaryBrandColor = secondaryBrandColor
+                    ))
                 },
                 onSendClick = {
-                    navigator.push(SendScreen)
-//                    navigator.push(SendScreen(onConfirm = { amountStr ->
-//                        onWithdraw(amountStr) // Call lambda from App.kt
-//                        navigator.pop()
-//                    }))
-                    println("Send clicked on HomeScreen")
+                    navigator.push(SendScreen(onConfirm = { amountStr ->
+                        onWithdraw(amountStr) // Call lambda from App.kt
+                        navigator.pop()
+                    },
+                        isDarkMode = isDarkMode, // Pass isDarkMode from HomeScreen
+                        primaryBrandColor = primaryBrandColor, // Pass primaryBrandColor from HomeScreen
+                        secondaryBrandColor = secondaryBrandColor
+                    ))
+
                 },
                 onReceiveClick = {
                     navigator.push(ReceiveScreen)
@@ -136,7 +155,7 @@ class HomeScreen(
                 }
             )
 
-            Spacer(Modifier.height(48.dp))
+            Spacer(Modifier.height(8.dp))
 
             Text(
                 "Recent Activity",
@@ -148,23 +167,31 @@ class HomeScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 4.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(containerColor = recentActivityCardColor),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                    // Month Header (Example)
+
                     Text(
                         "May 2025", // Example Month
                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
                     )
-                    // Example Transaction
-                    TransactionRow(item = exampleTransaction)
-
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
-
+                    if (recentTransactions.isEmpty()) {
+                        Text(
+                            "No recent transactions.",
+                            modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
+                        )
+                    } else {
+                        recentTransactions.forEachIndexed { index, transaction ->
+                            TransactionRow(item = transaction)
+                            if (index < recentTransactions.lastIndex) { // Add divider if not the last item
+                                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+                            }
+                        }
+                    }
                     // "More transactions..." clickable text
                     Text(
                         text = "More transactions...",
@@ -178,7 +205,7 @@ class HomeScreen(
             }
             // --- END OF NEW "RECENT ACTIVITY" SECTION ---
 
-            Spacer(Modifier.weight(1f)) // This remains at the end
+            Spacer(Modifier.height(8.dp)) // This remains at the end
         }
 
         // --- NEW TRANSACTION BOTTOM SHEET CALL ---

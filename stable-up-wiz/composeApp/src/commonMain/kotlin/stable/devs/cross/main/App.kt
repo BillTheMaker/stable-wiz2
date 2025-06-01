@@ -57,12 +57,11 @@ fun App() {
         val integerPart = parts[0]
         val actualDecimalPart = if (parts.size > 1) parts[1] else ""
         val decimalPart = if (parts.size > 1) parts[1].padEnd(decimalPlaces, '0') else "".padEnd(decimalPlaces, '0')
-        return "$currencySymbol$integerPart.$decimalPart"
+        return "$integerPart.$decimalPart"
     }
 
     val formattedBalanceState: State<String> = remember {
         derivedStateOf {
-            println("derivedStateOf for formattedBalance executing. fakeBalance = $fakeBalance")
             formatDoubleToCurrency(fakeBalance)
         }
     }

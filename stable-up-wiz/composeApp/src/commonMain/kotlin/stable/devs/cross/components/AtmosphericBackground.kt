@@ -16,7 +16,11 @@ fun AtmosphericBackground(
     modifier: Modifier = Modifier,
     isDarkMode: Boolean,
     glowHintColor: Color, // Your secondaryBrand (Blue)
-    baseBackgroundColor: Color
+    baseBackgroundColor: Color,
+    customLightHitRelX: Float? = null,  // Nullable
+    customLightHitRelY: Float? = null, // Nullable
+    customGradientRadiusFactor: Float? = null, // Default will be 0.85f if null
+    customUnlitColorStop: Float? = null       // Default will be 0.9f if null
 ) {
     Canvas(modifier = modifier.fillMaxSize()) {
         val canvasWidth = size.width
@@ -32,22 +36,28 @@ fun AtmosphericBackground(
         val lightHitRelX: Float
         val lightHitRelY: Float
 
-        if (isDarkMode) {
-            // Dark Mode: Light "behind" - interpret as coming from the far left
-            // This will place the highlight on the far-left side of the large shape.
-            lightHitRelX = shapeWidth * 1.2f // Closer to the shape's own left edge
-            lightHitRelY = shapeHeight * 0.7f // Centered vertically on the shape
+        if (customLightHitRelX != null && customLightHitRelY != null) {
+            lightHitRelX = shapeWidth * customLightHitRelX // Assume custom values are factors of shapeWidth/Height
+            lightHitRelY = shapeHeight * customLightHitRelY
         } else {
-            // Light Mode: Light "in front but off screen" - similar to original, from the right
-            lightHitRelX = shapeWidth * -.5f
-            lightHitRelY = shapeHeight * 0.2f // Original Y position
+            if (isDarkMode) {
+                // Dark Mode: Light "behind" - interpret as coming from the far left
+                // This will place the highlight on the far-left side of the large shape.
+                lightHitRelX = shapeWidth * 1.35f // Closer to the shape's own left edge
+                lightHitRelY = shapeHeight * 0.3f // Centered vertically on the shape
+            } else {
+                // Light Mode: Light "in front but off screen" - similar to original, from the right
+                lightHitRelX = shapeWidth * -.5f
+                lightHitRelY = shapeHeight * 0.2f // Original Y position
+            }
         }
         // Convert to absolute canvas coordinates for the gradient center
         val gradientCenterX = shapeTopLeftX + lightHitRelX
         val gradientCenterY = shapeTopLeftY + lightHitRelY
 
         // Radius of the gradient *on the shape*. This controls how the light falls off across the shape.
-        val gradientRadiusOnShape = shapeWidth * 0.85f // Light spreads over percentage of shape's width
+        val gradientRadiusFactorToUse = customGradientRadiusFactor ?: 0.85f
+        val gradientRadiusOnShape = shapeWidth * gradientRadiusFactorToUse
 
         // Colors for the gradient on the shape
         val highlightColor = glowHintColor.copy(alpha = if (isDarkMode) 0.30f else 0.20f)
@@ -58,12 +68,14 @@ fun AtmosphericBackground(
         // The shape fades into the base background color at its "unlit" parts
         val shapeUnlitColor = baseBackgroundColor
 
+        val unlitColorStopToUse = customUnlitColorStop ?: 0.8f
+
         val shapeBrush = Brush.radialGradient(
             // Lit part of the shape
             0.0f to highlightColor,
             // How quickly the highlight fades across the shape.
             // 0.4f means it fades to the shape's unlit color by 40% of gradientRadiusOnShape
-            0.9f to shapeUnlitColor,
+            unlitColorStopToUse to shapeUnlitColor,
 
             center = Offset(gradientCenterX, gradientCenterY), // Center of light ON THE SHAPE
             radius = gradientRadiusOnShape

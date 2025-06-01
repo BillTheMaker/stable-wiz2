@@ -61,7 +61,7 @@ fun TransactionRow(
                     imageVector = item.icon,
                     contentDescription = item.type.name,
                     modifier = Modifier.size(20.dp),
-                    tint = MaterialTheme.colorScheme.primary // Generic icon color
+                    tint = MaterialTheme.colorScheme.secondary // Generic icon color
                 )
             }
             Spacer(Modifier.width(12.dp))
@@ -82,12 +82,7 @@ fun TransactionRow(
             text = item.amount,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium,
-            // Optionally color based on type:
-            color = if (item.type == TransactionType.DEPOSIT || item.type == TransactionType.RECEIVE) {
-                Color(0xFF2E7D32) // Dark Green
-            } else {
-                MaterialTheme.colorScheme.onSurface // Default, or a red for withdrawals
-            }
+            color = MaterialTheme.colorScheme.onSurface //
         )
     }
 }

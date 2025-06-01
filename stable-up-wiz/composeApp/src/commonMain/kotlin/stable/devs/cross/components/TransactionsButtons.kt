@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 private val DarkGrayButtonBackground = Color(0xFF2C2C2E) // A common dark gray, adjust as needed
 private val WhiteIconColor = Color.White
 
+val buttonSpacing = 36.dp
 @Composable
 fun TransactionButtons(
     onDepositClick: () -> Unit,
@@ -28,8 +29,8 @@ fun TransactionButtons(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp), // Added some vertical padding for the section
-        horizontalArrangement = Arrangement.SpaceEvenly, // Distribute buttons evenly
+            .padding(top = 0.dp, bottom = 40.dp, start = 0.dp, end = 0.dp), // Added some vertical padding for the section
+        horizontalArrangement = Arrangement.Center, // Distribute buttons evenly
         verticalAlignment = Alignment.Top // Align items to the top if labels have different heights
     ) {
         ActionButton(
@@ -37,11 +38,13 @@ fun TransactionButtons(
             label = "Deposit",
             onClick = onDepositClick
         )
+        Spacer(Modifier.width(buttonSpacing))
         ActionButton(
             icon = Icons.AutoMirrored.Filled.Send,
             label = "Send",
             onClick = onSendClick
         )
+        Spacer(Modifier.width(buttonSpacing))
         ActionButton(
             icon = Icons.Filled.ArrowDownward, // Example icon for Receive
             label = "Receive",
@@ -70,10 +73,10 @@ private fun ActionButton(
                 contentColor = WhiteIconColor
             ),
             elevation = ButtonDefaults.buttonElevation(
-                defaultElevation = 16.dp,
+                defaultElevation = 12.dp,
                 pressedElevation = 0.dp,
                 hoveredElevation = 8.dp,
-                focusedElevation = 8.dp
+                focusedElevation = 4.dp
             ),
             contentPadding = PaddingValues(0.dp) // Remove default padding to center icon better
         ) {

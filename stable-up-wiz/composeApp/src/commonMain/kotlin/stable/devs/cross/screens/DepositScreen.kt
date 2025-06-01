@@ -23,8 +23,15 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import stable.devs.cross.components.AtmosphericBackground
 
-data class DepositScreen(val onConfirm: (String) -> Unit) : Screen { // Or data class DepositScreen(...) if it needs params
+data class DepositScreen(
+    val onConfirm: (String) -> Unit,
+    val isDarkMode: Boolean, // Passed from App.kt via HomeScreen or directly
+    val primaryBrandColor: Color, // Example theme color
+    val secondaryBrandColor: Color // Example theme color
+    // Add other necessary parameters, like the actual theme colors from App.kt
+) : Screen { // Or data class DepositScreen(...) if it needs params
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -35,6 +42,17 @@ data class DepositScreen(val onConfirm: (String) -> Unit) : Screen { // Or data 
         val darkGrayButtonColor = Color(0xFF2C2C2E) // Example dark gray, adjust as needed
         val whiteContentColor = Color.White
 
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Call AtmosphericBackground first, so it's in the back
+            AtmosphericBackground(
+                modifier = Modifier.fillMaxSize(),
+                isDarkMode = isDarkMode,
+                glowHintColor = secondaryBrandColor, // Or a specific color for this screen
+                baseBackgroundColor = MaterialTheme.colorScheme.background, // Example base colors
+                customLightHitRelX = 1.2f, // Example: Custom light position for SendScreen
+                customLightHitRelY = 0.9f  // Example: Custom light position for SendScreen
+                // Omit custom params to use defaults
+            )
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -45,7 +63,8 @@ data class DepositScreen(val onConfirm: (String) -> Unit) : Screen { // Or data 
                         }
                     }
                 )
-            }
+            },
+            containerColor = Color.Transparent
         ) { innerPadding ->
             Column(
                 modifier = Modifier
@@ -176,7 +195,7 @@ data class DepositScreen(val onConfirm: (String) -> Unit) : Screen { // Or data 
                 Spacer(Modifier.weight(4f)) // Pushes buttons to the bottom
 
 
-            }
+            }}
         }
     }
 }
