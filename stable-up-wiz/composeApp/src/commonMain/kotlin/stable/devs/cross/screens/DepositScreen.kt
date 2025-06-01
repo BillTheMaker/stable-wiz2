@@ -38,7 +38,7 @@ data class DepositScreen(val onConfirm: (String) -> Unit) : Screen { // Or data 
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(" ") }, // Changed title
+                    title = { Text("Savings") }, // Changed title
                     navigationIcon = {
                         IconButton(onClick = { navigator.pop() }) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
@@ -51,19 +51,10 @@ data class DepositScreen(val onConfirm: (String) -> Unit) : Screen { // Or data 
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .padding(horizontal = 24.dp, vertical = 16.dp), // Adjusted padding
+                    .padding(start = 24.dp, end = 24.dp, top = 0.dp, bottom = 16.dp), // Adjusted padding
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Savings",
-                    fontSize = 30.sp,
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontSize = 28.sp,
-                        lineHeight = 32.sp),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
+                Spacer(Modifier.height(24.dp))
                 // 1. Card Picture (Placeholder)
                 Box(
                     modifier = Modifier
@@ -173,6 +164,7 @@ data class DepositScreen(val onConfirm: (String) -> Unit) : Screen { // Or data 
                         )
                     }
                 }
+                Spacer(Modifier.height(24.dp))
                // 3. Descriptive Text 2
                 Text(
                     text = "Earn 7% APY on your balance. Interest is paid out monthly",

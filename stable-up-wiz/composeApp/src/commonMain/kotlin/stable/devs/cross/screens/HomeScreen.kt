@@ -7,10 +7,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
@@ -23,11 +19,36 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import stable.devs.cross.components.InfoCard
 import stable.devs.cross.components.TransactionButtons
-import stable.devs.cross.ui.TopSettingsMenu
+import stable.devs.cross.components.TopSettingsMenu
 import stable.devs.cross.screens.DepositScreen
 import stable.devs.cross.screens.SendScreen
 import stable.devs.cross.screens.ReceiveScreen
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDownward // For example transaction
+import androidx.compose.material3.Card // For the new card
+import androidx.compose.material3.CardDefaults // For card styling
+import androidx.compose.material3.HorizontalDivider // For divider in card
+import androidx.compose.material3.MaterialTheme // For TextStyles and Colors
+import androidx.compose.material3.Text // For new Text elements
+import androidx.compose.runtime.mutableStateOf // For showTransactionSheet state
+import androidx.compose.runtime.remember // For showTransactionSheet and exampleTransaction
+import androidx.compose.runtime.setValue // For showTransactionSheet state
+import androidx.compose.material3.rememberModalBottomSheetState // For bottom sheet state
+import androidx.compose.ui.graphics.Color // For primaryBrandColor, etc.
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+
+// Imports for the TransactionRow and related data (assuming they are in your 'components' package)
+import stable.devs.cross.components.TransactionRow
+import stable.devs.cross.components.TransactionUiItem
+import stable.devs.cross.components.TransactionType
+// Import for TransactionBottomSheet (assuming it's in 'ui' package as per your TopSettingsMenu import)
+import stable.devs.cross.components.TransactionBottomSheet
+// --- END OF NEW IMPORTS ---
 
 
 
@@ -53,11 +74,22 @@ class HomeScreen(
         val currentBalanceValue by balanceState
         val screenInstanceHashCode = this.hashCode()
 
-        SideEffect {
-            println("---- HomeScreen Content executing (hashCode: $screenInstanceHashCode, key: $key). currentBalanceValue = $currentBalanceValue ----")
-        }
-
         val navigator = LocalNavigator.currentOrThrow
+
+        var showTransactionSheet by remember { mutableStateOf(false) }
+        val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+        val exampleTransaction = remember {
+            TransactionUiItem(
+                id = "exTx1",
+                description = "Received from Friend",
+                amount = "+ $75.00",
+                date = "May 31, 2025",
+                type = TransactionType.RECEIVE,
+                icon = Icons.Filled.ArrowDownward // Example icon
+            )
+        }
+        val recentActivityCardColor = Color(0xFF2C2C2E)
 
         Column(
             modifier = Modifier
@@ -67,9 +99,8 @@ class HomeScreen(
         ) {
             TopSettingsMenu()
 
-            println("HomeScreen (hashCode: $screenInstanceHashCode, key: $key): Passing to InfoCard, balanceToDisplay = $currentBalanceValue")
             InfoCard(
-                modifier = Modifier.padding(top = 16.dp),
+                modifier = Modifier.padding(top = 8.dp),
                 cardBgPrimaryColor = primaryBrandColor,
                 cardBgSecondaryColor = secondaryBrandColor,
                 balanceToDisplay = currentBalanceValue
@@ -105,8 +136,62 @@ class HomeScreen(
                 }
             )
 
-            Spacer(Modifier.weight(1f))
+            Spacer(Modifier.height(48.dp))
 
+            Text(
+                "Recent Activity",
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            )
+            Spacer(Modifier.height(16.dp))
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = recentActivityCardColor),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            ) {
+                Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                    // Month Header (Example)
+                    Text(
+                        "May 2025", // Example Month
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                    // Example Transaction
+                    TransactionRow(item = exampleTransaction)
+
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+
+                    // "More transactions..." clickable text
+                    Text(
+                        text = "More transactions...",
+                        style = MaterialTheme.typography.labelLarge,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .clickable { showTransactionSheet = true }
+                            .padding(vertical = 8.dp)
+                    )
+                }
+            }
+            // --- END OF NEW "RECENT ACTIVITY" SECTION ---
+
+            Spacer(Modifier.weight(1f)) // This remains at the end
         }
-    }
-}
+
+        // --- NEW TRANSACTION BOTTOM SHEET CALL ---
+        // This will show your existing TransactionBottomSheet UI when "More transactions..." is clicked.
+        // You will later refactor TransactionBottomSheet to display a list of transactions.
+        if (showTransactionSheet) {
+            TransactionBottomSheet(
+                transactionType = "All Transactions", // Placeholder title for now
+                sheetState = bottomSheetState,
+                onDismiss = { showTransactionSheet = false },
+                onConfirm = { _ -> // The current onConfirm might not be relevant for just viewing a list
+                    showTransactionSheet = false
+                    println("Transaction Bottom Sheet (for 'All Transactions') actioned/closed.")
+                }
+            )
+        }}}

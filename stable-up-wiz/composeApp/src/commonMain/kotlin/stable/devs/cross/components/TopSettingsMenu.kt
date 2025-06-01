@@ -1,8 +1,9 @@
-package stable.devs.cross.ui // Ensure this is the correct package
+package stable.devs.cross.components // Ensure this is the correct package
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle // Changed from Menu to AccountCircle
 import androidx.compose.material3.Icon
@@ -39,6 +40,7 @@ fun TopSettingsMenu(
             Icon(
                 imageVector = Icons.Default.AccountCircle, // Use a profile icon
                 contentDescription = "Settings",
+                modifier = Modifier.size(48.dp),
                 tint = MaterialTheme.colorScheme.onBackground
             )
         }
