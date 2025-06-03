@@ -25,6 +25,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import stable.devs.cross.components.SettingsItem
 import stable.devs.cross.components.SettingsItemRow
+import stable.devs.cross.screens.AboutStableUpScreen
 
 // New data class to represent a group of items that will go into a card
 data class SettingsGroup(
@@ -156,7 +157,7 @@ private fun rememberSettingsGroups(navigator: cafe.adriel.voyager.navigator.Navi
                 SettingsItem(
                     "About StableUp",
                     Icons.Filled.Info,
-                    onClick = { navigator.push(AboutStableUpScreen()) }), // Changed icon
+                    onClick = { navigator.push(AboutStableUpScreen) }), // Changed icon
                 SettingsItem(
                     "Important documents",
                     Icons.Filled.Description,
@@ -194,7 +195,4 @@ fun SettingsHeader(title: String) {
 // These are just to make the navigation calls compile.
 class YourProfileScreen : Screen {
     @Composable override fun Content() { Text("Your Profile Screen Placeholder") }
-}
-class AboutStableUpScreen : Screen {
-    @Composable override fun Content() { Text("About StableUp Screen Placeholder") }
 }
