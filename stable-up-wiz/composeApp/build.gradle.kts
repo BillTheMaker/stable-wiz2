@@ -72,6 +72,9 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtimeCompose)
 
+            // Add the QR code generator library
+            implementation(libs.qrcode.kotlin)
+
             val voyagerVersion = "1.1.0-beta03" // Or the latest version you find
             implementation(libs.voyager.navigator)
             implementation(libs.cafe.voyager.transitions)

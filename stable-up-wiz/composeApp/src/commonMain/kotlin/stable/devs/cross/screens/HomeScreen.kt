@@ -145,13 +145,21 @@ class HomeScreen(
                     ))
 
                 },
+                // In HomeScreen.kt, within TransactionButtons
                 onReceiveClick = {
-                    navigator.push(ReceiveScreen)
-//                    navigator.push(ReceiveScreen(onConfirm = { amountStr ->
-//                        onDeposit(amountStr) // Call lambda from App.kt
-//                        navigator.pop()
-//                    }))
-                    println("Receive clicked on HomeScreen")
+                    println("HomeScreen (hashCode: $screenInstanceHashCode, key: $key): Receive button clicked.")
+                    navigator.push(ReceiveScreen(
+                        onConfirm = { amountStr ->
+                            // This onConfirm might now be vestigial for ReceiveScreen's current purpose
+                            // or could be repurposed if receiving implies some other action.
+                            println("HomeScreen (hashCode: $screenInstanceHashCode, key: $key): onConfirm from ReceiveScreen. Calling onDeposit.")
+                            onDeposit(amountStr) // Or handle differently
+                            navigator.pop()
+                        },
+                        isDarkMode = isDarkMode,
+                        primaryBrandColor = primaryBrandColor,
+                        secondaryBrandColor = secondaryBrandColor
+                    ))
                 }
             )
 
