@@ -23,6 +23,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import stable.devs.cross.utils.toComposeImageBitmap
 import qrcode.QRCode
+import qrcode.render.QRCodeGraphics
 import stable.devs.cross.components.AtmosphericBackground
 
 // Update ReceiveScreen to accept theme parameters
@@ -43,7 +44,6 @@ data class ReceiveScreen(
         val qrCodeBitmap: ImageBitmap? = remember(qrCodeUrl) {
             try {
                 val qrCode = QRCode(qrCodeUrl)
-                // Generate as PNG bytes. You can customize colors, size, etc. here.
                 val pngBytes: ByteArray? = qrCode.renderToBytes()
                 pngBytes?.toComposeImageBitmap()
             } catch (e: Exception) {
